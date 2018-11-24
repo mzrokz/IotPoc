@@ -5,10 +5,9 @@ import * as d3 from 'd3-selection';
 import * as d3Scale from "d3-scale";
 import * as d3Array from "d3-array";
 import * as d3Axis from "d3-axis";
-import { StatsBarChart } from '../../shared/data';
-import { MqttService, IMqttMessage } from 'ngx-mqtt';
+import { MqttService, IMqttMessage, IMqttServiceOptions } from 'ngx-mqtt';
 import { Subscription } from 'rxjs/Subscription';
-import { json, timeFormatDefaultLocale, timeFormatLocale } from 'd3';
+
 
 @Component({
   selector: 'page-home',
@@ -51,16 +50,23 @@ export class HomePage {
   }
 
   connectService() {
-    let options = {
-      /** the hostname of the mqtt broker */
-      hostname: 'broker.mqttdashboard.com',
-      /** the port to connect with websocket to the broker */
-      port: 8000,
-      /** the path parameters to connect to e.g. `/mqtt` */
-      path: 'mqtt',
-      protocol: 'ws'
-    }
-    this.mqttService.connect(options);
+    let options1 :IMqttServiceOptions;
+    options1.protocol='ws';
+    options1.hostname= 'broker.mqttdashboard.com';
+    options1.path= 'mqtt',
+    options1.port= 8000;
+    
+    // let options = {
+    //   /** the hostname of the mqtt broker */
+    //   hostname: 'broker.mqttdashboard.com',
+    //   /** the port to connect with websocket to the broker */
+    //   port: 8000,
+    //   /** the path parameters to connect to e.g. `/mqtt` */
+    //   path: 'mqtt',
+    //   protocol: 'ws'
+    // }
+   console.log(options1);
+    this.mqttService.connect(options1);
     this.subscribeTopic();
   }
 
@@ -133,8 +139,7 @@ export class HomePage {
       .attr("height", (d) => this.height - this.y(d.val));
   }
 
-  subscribeTopic() {
-    let that = this;
+  subscribeTopic() {   
     this.subscription = this.mqttService.observe('Floatinity/Laptop').subscribe((message: IMqttMessage) => {
       debugger;
       let payload =JSON.parse(message.payload.toString());
